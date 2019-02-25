@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+</body>
+</html>
+
+<script type="text/javascript">
+    // Your ES6 code
+    // ——————————————————————————————————————————————————————
+
+    // ES6 新增了let命令，用来声明变量。它的用法类似于var，但是所声明的变量，只在let命令所在的代码块内有效。
+    //    {
+    //        var a = 200;
+    //        let b = 300;
+    //    }
+    //    console.log(a);
+    //    console.log(b);  // b is not defined
+
+    // ——————————————————————————————————————————————————————
+    //    for循环的计数器，就很合适使用let命令。
+    //    for (let i = 0; i < 10; i++) {
+    //    }
+    //    console.log(i);  // ReferenceError: i is not defined
+    //    for (var j = 0; j < 10; j++) {
+    //    }
+    //    console.log(j);  //  10
+    //    上面代码中，计数器i只在for循环体内有效，在循环体外引用就会报错。
+
+    // ——————————————————————————————————————————————————————
+    //    var a = [];
+    //    for (var i = 0; i < 10; i++) {
+    //        a[i] = function () {
+    //            console.log(i);
+    //        };
+    //    }
+    //    a[6](); // 10
+
+    //    如果使用let，声明的变量仅在块级作用域内有效，最后输出的是 6。
+    //    var a = [];
+    //    for (let i = 0; i < 10; i++) {
+    //        a[i] = function () {
+    //            console.log(i);
+    //        };
+    //    }
+    //    a[6](); // 6
+
+    // ——————————————————————————————————————————————————————
+    //    for循环还有一个特别之处，就是设置循环变量的那部分是一个父作用域，而循环体内部是一个单独的子作用域。
+    //    for (let i = 0; i < 3; i++) {
+    //        console.log(i);
+    //        let i = 'abc';
+    //        console.log(i);
+    //    }
+
+
+    // ——————————————————————————————————————————————————————
+    //    let命令改变了语法行为，它所声明的变量一定要在声明后使用，否则报错。
+    // var 的情况
+    //    console.log(foo); // 输出undefined
+    //    var foo = 2;
+    //
+    //    // let 的情况
+    //    console.log(bar); // 报错ReferenceError
+    //    let bar = 2;
+
+    // —————————————————————————暂时性死区—————————————————————————————
+    //    只要块级作用域内存在let命令，它所声明的变量就“绑定”（binding）这个区域，不再受外部的影响。
+
+    //    var tmp = 123;
+    //
+    //    if (true) {
+    //        tmp = 'abc'; // ReferenceError
+    //        let tmp;
+    //    }
+
+    //ES6 明确规定，如果区块中存在let和const命令，这个区块对这些命令声明的变量，从一开始就形成了封闭作用域。凡是在声明之前就使用这些变量，就会报错。
+
+    //    if (true) {
+    //        // TDZ开始
+    //        tmp = 'abc'; // ReferenceError
+    //        console.log(tmp); // ReferenceError
+    //
+    //        let tmp; // TDZ结束
+    //        console.log(tmp); // undefined
+    //
+    //        tmp = 123;
+    //        console.log(tmp); // 123
+    //    }
+
+    // ——————————————————————————————————————————————————————
+    //    “暂时性死区”也意味着typeof不再是一个百分之百安全的操作。
+    //    {
+    //        console.log(typeof x);  // undefined
+    //        console.log(typeof y);  // Error  y is not defined  凡是在声明之前就使用这些变量，就会报错。
+    //        let y;
+    //    }
+    // ——————————————————————————————————————————————————————
+    //    function bar(x = y, y = 2) {
+    //        return [x, y];
+    //    }
+    //    bar(); // ReferenceError   y is not defined
+
+    //    function bar(x = 2, y = x) {
+    //        return [x, y];
+    //    }
+    //    console.log(bar()); // [2, 2]
+
+    //    // 不报错
+    //    var x = x;
+    //    // 报错
+    //    let y = y;
+    //    // ReferenceError: y is not defined
+
+    // ——————————————————————————不允许重复声明————————————————————————————
+    //    let不允许在相同作用域内，重复声明同一个变量
+    // 报错
+    //    function func() {
+    //        let a = 10;
+    //        var a = 1;
+    //    }
+    //
+    //    // 报错
+    //    function func() {
+    //        let a = 10;
+    //        let a = 1;
+    //    }
+
+    // ——————————————————————————块级作用域————————————————————————————
+
+    //    var tmp = new Date();
+    //
+    //    function f() {
+    //        console.log(tmp);
+    //        var tmp = 'hello world';
+    //    }
+    //
+    //    f(); // undefined
+    //    //变量提升，导致内层的tmp变量覆盖了外层的tmp变量。
+
+    //    var s = 'hello';
+    //
+    //    for (var i = 0; i < s.length; i++) {
+    //        console.log(s[i]);
+    //    }
+    //
+    //    console.log(i); // 5
+    //    //上面代码中，变量i只用来控制循环，但是循环结束后，它并没有消失，泄露成了全局变量。
+
+    // ——————————————————————————ES6 的块级作用域————————————————————————————
+
+    //    function f1() {
+    //        let n = 5;
+    //        if (true) {
+    //            let n = 10;
+    //        }
+    //        console.log(n); // 5
+    //    }
+    //
+    //    f1();
+    //
+    //    // 上面的函数有两个代码块，都声明了变量n，运行后输出 5。这表示外层代码块不受内层代码块的影响。如果两次都使用var定义变量n，最后输出的值才是 10。
+
+    // ES6 允许块级作用域的任意嵌套。
+
+    //    {
+    //        {
+    //            {
+    //                {
+    //                    {
+    //                        let insane = 'Hello World'
+    //                        console.log(insane)
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+
+    //上面代码使用了一个五层的块级作用域。外层作用域无法读取内层作用域的变量。
+    //    {
+    //        {
+    //            {
+    //                {
+    //                    {
+    //                        let insane = 'Hello World'
+    //                    }
+    //                    console.log(insane); // 报错  ReferenceError: insane is not defined
+    //                }
+    //            }
+    //        }
+    //    }
+
+    // ——————————————————————————块级作用域与函数声明————————————————————————————
+
+    // ES5 规定，函数只能在顶层作用域和函数作用域之中声明，不能在块级作用域声明。
+    //    // 情况一
+    //    if (true) {
+    //        function f() {}
+    //    }
+    //
+    //    // 情况二
+    //    try {
+    //        function f() {}
+    //    } catch(e) {
+    //        // ...
+    //    }
+
+    // 以上代码浏览器中可以通过
+
+
+    // ES6 规定，块级作用域之中，函数声明语句的行为类似于let，在块级作用域之外不可引用。
+
+    //    -允许在块级作用域内声明函数。
+    //    -函数声明类似于var，即会提升到全局作用域或函数作用域的头部。
+    //    -同时，函数声明还会提升到所在的块级作用域的头部。
+
+
+//    f();
+//    function f() {
+//        console.log('I am outside!');
+//    }
+//
+//    (function () {
+//        f(); // TypeError: f is not a function
+//        {
+//            function f() {
+//                console.log('I am inside!');
+//            }
+//        }
+//        f();
+//    }());
+
+
+
+//    {
+//        if (true){
+//            function f() {
+//                console.log('I am inside!');
+//            }
+//        }
+//        f()
+//    }
+
+    // 以上代码等同于以下
+//    {
+//        var f = undefined;
+//        if (false){
+//            f = function () {
+//                console.log('I am inside!');
+//            }
+//        }
+//        f();
+//    }
+
+
+    //考虑到环境导致的行为差异太大，应该避免在块级作用域内声明函数。如果确实需要，也应该写成函数表达式，而不是函数声明语句。
+//    // 函数声明语句
+//    {
+//        let a = 'secret1';
+//        function f() {
+//            return a;
+//        }
+//    }
+//    console.log(f())  //secret1
+//    // 函数表达式
+//    {
+//        let a = 'secret2';
+//        let f = function () {
+//            return a;
+//        };
+//        console.log(f()) //secret2
+//    }
+//    console.log(f())  //secret1
+
+    // 不报错
+//    'use strict';
+//    if (true) {
+//        function f() {
+//
+//        }
+//    }
+
+    // 报错   SyntaxError: In strict mode code, functions can only be declared at top level or inside a block.
+//    'use strict';
+//    if (true)
+//        function f() {}
+
+
+    /**
+     * 【const命令】
+     */
+</script>
