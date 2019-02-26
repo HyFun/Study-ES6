@@ -222,78 +222,202 @@
     //    -同时，函数声明还会提升到所在的块级作用域的头部。
 
 
-//    f();
-//    function f() {
-//        console.log('I am outside!');
-//    }
-//
-//    (function () {
-//        f(); // TypeError: f is not a function
-//        {
-//            function f() {
-//                console.log('I am inside!');
-//            }
-//        }
-//        f();
-//    }());
+    //    f();
+    //    function f() {
+    //        console.log('I am outside!');
+    //    }
+    //
+    //    (function () {
+    //        f(); // TypeError: f is not a function
+    //        {
+    //            function f() {
+    //                console.log('I am inside!');
+    //            }
+    //        }
+    //        f();
+    //    }());
 
 
-
-//    {
-//        if (true){
-//            function f() {
-//                console.log('I am inside!');
-//            }
-//        }
-//        f()
-//    }
+    //    {
+    //        if (true){
+    //            function f() {
+    //                console.log('I am inside!');
+    //            }
+    //        }
+    //        f()
+    //    }
 
     // 以上代码等同于以下
-//    {
-//        var f = undefined;
-//        if (false){
-//            f = function () {
-//                console.log('I am inside!');
-//            }
-//        }
-//        f();
-//    }
+    //    {
+    //        var f = undefined;
+    //        if (false){
+    //            f = function () {
+    //                console.log('I am inside!');
+    //            }
+    //        }
+    //        f();
+    //    }
 
 
     //考虑到环境导致的行为差异太大，应该避免在块级作用域内声明函数。如果确实需要，也应该写成函数表达式，而不是函数声明语句。
-//    // 函数声明语句
-//    {
-//        let a = 'secret1';
-//        function f() {
-//            return a;
-//        }
-//    }
-//    console.log(f())  //secret1
-//    // 函数表达式
-//    {
-//        let a = 'secret2';
-//        let f = function () {
-//            return a;
-//        };
-//        console.log(f()) //secret2
-//    }
-//    console.log(f())  //secret1
+    //    // 函数声明语句
+    //    {
+    //        let a = 'secret1';
+    //        function f() {
+    //            return a;
+    //        }
+    //    }
+    //    console.log(f())  //secret1
+    //    // 函数表达式
+    //    {
+    //        let a = 'secret2';
+    //        let f = function () {
+    //            return a;
+    //        };
+    //        console.log(f()) //secret2
+    //    }
+    //    console.log(f())  //secret1
 
     // 不报错
-//    'use strict';
-//    if (true) {
-//        function f() {
-//
-//        }
-//    }
+    //    'use strict';
+    //    if (true) {
+    //        function f() {
+    //
+    //        }
+    //    }
 
     // 报错   SyntaxError: In strict mode code, functions can only be declared at top level or inside a block.
-//    'use strict';
-//    if (true)
-//        function f() {}
+    //    'use strict';
+    //    if (true)
+    //        function f() {}
 
 
     /**
-     * 【const命令】
+     * ————————————————————【const命令】————————————————————————
      */
+
+    // ——————————————————————————基本用法————————————————————————————
+
+    // const声明一个只读的常量。一旦声明，常量的值就不能改变。
+
+    //    const PI = 3.1415926;
+    //
+    //    PI = 3;  // 再赋值的时候就会报错   TypeError: Assignment to constant variable.
+
+    // const 声明的变量必须初始化
+    //    const PI;  // SyntaxError: Missing initializer in const declaration
+
+
+    // const 作用域
+    //    {
+    //        const PI = 3;
+    //    }
+    //    console.log(PI);   //ReferenceError: PI is not defined
+
+
+    //const命令声明的常量也是不提升，同样存在暂时性死区，只能在声明的位置后面使用。
+    //    {
+    //        console.log(MAX); // ReferenceError: MAX is not defined
+    //        const MAX = 5;
+    //    }
+
+
+    // const声明的常量，也与let一样不可重复声明。
+    //    {
+    //        var MAX = 12;
+    //        const MAX = 13;
+    //        // SyntaxError: Identifier 'MAX' has already been declared
+    //    }
+
+    //    {
+    //        const MAX = 12;
+    //        var MAX = 13;
+    //        // SyntaxError: Identifier 'MAX' has already been declared
+    //    }
+
+    //    {
+    //        const MAX = 12;
+    //        const MAX = 13;
+    //        // SyntaxError: Identifier 'MAX' has already been declared
+    //    }
+
+
+    //const实际上保证的，并不是变量的值不得改动，而是变量指向的那个内存地址所保存的数据不得改动。对于简单类型的数据（数值、字符串、布尔值），值就保存在变量指向的那个内存地址，因此等同于常量。但对于复合类型的数据（主要是对象和数组），变量指向的内存地址，保存的只是一个指向实际数据的指针，const只能保证这个指针是固定的（即总是指向另一个固定的地址），至于它指向的数据结构是不是可变的，就完全不能控制了。因此，将一个对象声明为常量必须非常小心。
+    //    {
+    //        const obj = {
+    //            name: '朱明宇',
+    //            age: 26,
+    //            height: 170
+    //        }
+    //        console.log(obj);
+    //        obj.name = '吴天航'; // 此时obj中的name属性改变了
+    //        console.log(obj);
+    //
+    //        obj = {};  // 如果将obj重新指定到一个对象则会报错   TypeError: Assignment to constant variable.
+    //    }
+
+
+    //如果真的想将对象冻结，应该使用Object.freeze方法。
+    //    'use strict';
+    //    const obj = Object.freeze({
+    //        name: '朱明宇',
+    //        age: 26,
+    //        height: 170
+    //    });
+    //    obj.name = '吴天航';  // 不会改变值   (严格模式下还会报错 TypeError: Cannot assign to read only property 'name' of object '#<Object>')
+    //    console.log(obj);
+
+
+    //ES6 声明变量的六种方法
+    //  es5 :  var、function
+    // es6：let、const、import、class
+
+
+    // ——————————————————————————顶层对象的属性————————————————————————————
+    // 顶层对象，在浏览器环境指的是window对象，在 Node 指的是global对象。ES5 之中，顶层对象的属性与全局变量是等价的。
+    // ES6 为了改变这一点，一方面规定，为了保持兼容性，var命令和function命令声明的全局变量，依旧是顶层对象的属性；另一方面规定，let命令、const命令、class命令声明的全局变量，不属于顶层对象的属性。也就是说，从 ES6 开始，全局变量将逐步与顶层对象的属性脱钩。
+
+
+    //    var a = 123;
+    //    console.log(window.a)
+    //
+    //    let b = 123;
+    //    console.log(window.b)  // undefined
+
+    // ——————————————————————————顶层对象————————————————————————————
+
+    //ES5 的顶层对象，本身也是一个问题，因为它在各种实现里面是不统一的。
+    // 浏览器里面，顶层对象是window，但 Node 和 Web Worker 没有window。
+    // 浏览器和 Web Worker 里面，self也指向顶层对象，但是 Node 没有self。
+    // Node 里面，顶层对象是global，但其他环境都不支持。
+
+    // 获取顶层对象的方法
+    //        // 方法一
+    //    let w = (typeof window !== 'undefined'
+    //            ? window
+    //            : (typeof process === 'object' &&
+    //            typeof require === 'function' &&
+    //            typeof global === 'object')
+    //                ? global
+    //                : this);
+    //
+    //    console.log(w);
+    //
+    //    // 方法二
+    //    let getGlobal = function () {
+    //        if (typeof self !== 'undefined') {
+    //            return self;
+    //        }
+    //        if (typeof window !== 'undefined') {
+    //            return window;
+    //        }
+    //        if (typeof global !== 'undefined') {
+    //            return global;
+    //        }
+    //        throw new Error('unable to locate global object');
+    //    };
+    //
+    //    console.log(getGlobal())
+
+
 </script>
