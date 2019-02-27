@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+</body>
+</html>
+
+<script type="text/javascript">
+    /**
+     *  ES6 加强了对 Unicode 的支持，并且扩展了字符串对象。
+     */
+
+    // ——————————————————————1. 字符的 Unicode 表示法——————————————————————————
+    //JavaScript 允许采用\uxxxx形式表示一个字符，其中xxxx表示字符的 Unicode 码点。
+    //    {
+    //        console.log('\u0061')
+    //    }
+    //但是，这种表示法只限于码点在\u0000~\uFFFF之间的字符。超出这个范围的字符，必须用两个双字节的形式表示。
+    //    {
+    //        console.log('\uD842\uDFB7')  // "𠮷"
+    //        console.log('\u20bb7')  // 超过\uFFFF  会显示成   \u20bb + 7    ₻7
+    //    }
+
+
+    // ES6中，只要将码点放入大括号，就能正确解读该字符
+    //    {
+    //        console.log('\u{20bb7}')  // 𠮷
+    //        console.log('\u{41}\u{42}\u{43}')
+    //        let hello = 123;
+    //        console.log(hell\u{6f})  // 123
+    //        console.log('\u{1F680}' === '\uD83D\uDE80')  // true
+    //    }
+
+    //有了这种表示法之后，JavaScript 共有 6 种方法可以表示一个字符。
+    //    {
+    //        console.log('\z' === 'z')  // true
+    //        console.log('\172' === 'z') // true
+    //        console.log('\x7A' === 'z') // true
+    //        console.log('\u007A' === 'z') // true
+    //        console.log('\u{7A}' === 'z') // true
+    //    }
+
+
+    // ——————————————————————2. codePointAt()——————————————————————————
+    //    {
+    //        let s = '𠮷';
+    //        console.log(s.length)  // 2
+    //        console.log(s.charAt(0))   // 乱码
+    //        console.log(s.charAt(1))   // 乱码
+    //
+    //        console.log(s.charCodeAt(0))  // 55362
+    //        console.log(s.charCodeAt(1))  // 57271
+    //        console.log(s.charCodeAt(0).toString(16))  // d842
+    //        console.log(s.charCodeAt(1).toString(16))  // dfb7
+    //    }
+
+
+    // ES6 提供了codePointAt方法，能够正确处理 4 个字节储存的字符，返回一个字符的码点。
+    //    {
+    //        let s = '𠮷a';
+    //        console.log(s.length)
+    //        console.log(s.codePointAt(0))
+    //        console.log(s.codePointAt(1))
+    //        console.log(s.codePointAt(2))
+    //    }
+    //总之，codePointAt方法会正确返回 32 位的 UTF-16 字符的码点。对于那些两个字节储存的常规字符，它的返回结果与charCodeAt方法相同。
+
+
+    /**
+     * 你可能注意到了，codePointAt方法的参数，仍然是不正确的。比如，上面代码中，
+     * 字符a在字符串s的正确位置序号应该是 1，但是必须向codePointAt方法传入 2。
+     * 解决这个问题的一个办法是使用for...of循环，因为它会正确识别 32 位的 UTF-16 字符。
+     */
+    //    {
+    //        let s = '𠮷a';
+    //        for(let ch of s){
+    //            console.log(ch.codePointAt(0))
+    //            console.log(ch.codePointAt(0).toString(16).toUpperCase())
+    //        }
+    //    }
+
+
+    //codePointAt方法是测试一个字符由两个字节还是由四个字节组成的最简单方法。
+    //    {
+    //        function is32Bit(c) {
+    //            return c.codePointAt(0) > 0xFFFF;
+    //        }
+    //        console.log(is32Bit("𠮷")) // true
+    //        console.log(is32Bit("a")) // false
+    //    }
+
+    // ——————————————————————3. String.fromCodePoint()——————————————————————————
+
+    // ES5 提供String.fromCharCode方法，用于从码点返回对应字符，但是这个方法不能识别 32 位的 UTF-16 字符（Unicode 编号大于0xFFFF）。
+    //    {
+    //        console.log(String.fromCharCode(0x20BB7)) // ஷ
+    //    }
+
+
+    // ES6 提供了String.fromCodePoint方法，可以识别大于0xFFFF的字符
+    //    {
+    //        console.log(String.fromCodePoint(0x20BB7))  //𠮷
+    //    }
+
+
+    // ——————————————————————4. 字符串的遍历器接口——————————————————————————
+
+    //ES6 为字符串添加了遍历器接口（详见《Iterator》一章），使得字符串可以被for...of循环遍历。
+    //    {
+    //        let s = 'hello world!';
+    //        for (let w of s) {
+    //            console.log(w)
+    //        }
+    //    }
+
+
+    // 除了遍历字符串，这个遍历器最大的优点是可以识别大于0xFFFF的码点，传统的for循环无法识别这样的码点。
+    //    {
+    //        let text = String.fromCodePoint(0x20BB7);
+    //
+    //        // 传统的遍历
+    //        for (let i = 0; i < text.length; i++) {
+    //            console.log(text[i]);
+    //        }
+    //        // " "
+    //        // " "
+    //        // for ... of 遍历
+    //        for (let i of text) {
+    //            console.log(i);
+    //        }
+    //        // "𠮷"
+    //    }
+
+
+    // ——————————————————————5. normalize() ——————————————————————————
+    // ES5中
+    //    {
+    //        console.log('\u01D1')  // Ǒ
+    //        console.log('\u004F\u030C') // Ǒ
+    //        console.log('\u01D1' === '\u004F\u030C')//false
+    //    }
+    // ES6中 加入normalize()
+    //    {
+    //        console.log('\u01D1'.normalize() === '\u004F\u030C'.normalize()) // true
+    //    }
+
+
+    // ——————————————————————6. includes(), startsWith(), endsWith() ——————————————————————————
+    /**
+     *ES5中提供 indexOf方法，用来确定一个字符串是否包含在另一个字符串里边，ES6提供了新方法
+     *      includes()：返回布尔值，表示是否找到了参数字符串。
+     *      startsWith()：返回布尔值，表示参数字符串是否在原字符串的头部。
+     *      endsWith()：返回布尔值，表示参数字符串是否在原字符串的尾部。
+     */
+    //    {
+    //        let s = 'Hello World!';
+    //
+    //        console.log(s.includes('Hello'))  // true
+    //        console.log(s.startsWith('Hello')) //true
+    //        console.log(s.endsWith('!'))  // true
+    //
+    //        // 这三个方法都支持第二个参数，表示从第几个位置开始
+    //        console.log(s.includes('He', 3)) // false
+    //    }
+    // 【特别注意】endsWith的行为与其他两个方法有所不同。它针对前n个字符，而其他两个方法针对从第n个位置直到字符串结束。
+
+
+    // ——————————————————————7. repeat()  ——————————————————————————
+    // repeat方法返回一个新字符串，表示将原字符串重复n次。
+    //    {
+    //        console.log('x'.repeat(3))  // xxx
+    //        console.log('hello'.repeat(3))  // hellohellohello
+    //        console.log('asd'.repeat(0)) // ''
+    //    }
+
+
+    // 参数如果是小数，会被取整。
+    //    {
+    //        console.log('朱明宇'.repeat(2.9)) // 朱明宇朱明宇
+    //    }
+
+
+    // 如果repeat的参数是负数或者Infinity，会报错。
+    //    {
+    //        console.log('x'.repeat(-1))  // 出错   RangeError: Invalid count value
+    //    }
+
+    // 如果参数是 0 到-1 之间的小数，则等同于 0
+    //    {
+    //        console.log('x'.repeat(-0.5))  // ''
+    //    }
+
+
+    // 参数NaN等同于 0。
+    //    {
+    //        console.log('x'.repeat(NaN))  // ''
+    //    }
+
+
+    //如果repeat的参数是字符串，则会先转换成数字。
+    //    {
+    //        console.log('x'.repeat('na'))  // ''
+    //        console.log('x'.repeat('5')) //xxxxx
+    //        console.log('x'.repeat('12s')) // ''
+    //    }
+
+
+    // ——————————————————————8. padStart()，padEnd()  ——————————————————————————
+
+    /**
+     * ES2017 引入了字符串补全长度的功能。如果某个字符串不够指定长度，会在头部或尾部补全。padStart()用于头部补全，padEnd()用于尾部补全。
+     */
+
+    // padStart()和padEnd()一共接受两个参数，第一个参数是字符串补全生效的最大长度，第二个参数是用来补全的字符串。
+    //    {
+    //        let x = 'x';
+    //        console.log(x.padStart(5,'ab')) // ababx
+    //        console.log(x.padStart(4,'ab'))  // abax
+    //        console.log(x.padStart(4,'ababab')) // abax
+    //
+    //        console.log(x.padEnd(5,'ab')) // xabab
+    //        console.log(x.padEnd(4,'ab')) // xaba
+    //        console.log(x.padEnd(4,'ababab')) // xaba
+    //    }
+
+
+    // 如果原字符串的长度，等于或大于最大长度，则字符串补全不生效，返回原字符串。
+    //    {
+    //        let x = 'xxxxxx';
+    //        console.log(x.padStart(6, 'aa')) // xxxxxx
+    //        console.log(x.padEnd(6, 'aa')) // xxxxxx
+    //
+    //        console.log(x.padStart(4, 'abab'))  // xxxxxx
+    //        console.log(x.padEnd(4, 'abab')) // xxxxxx
+    //    }
+
+
+    //如果用来补全的字符串与原字符串，两者的长度之和超过了最大长度，则会截去超出位数的补全字符串。
+    //    {
+    //        let x = 'xxx';
+    //        console.log(x.padStart(4, '123456')) // 1xxx
+    //        console.log(x.padEnd(4, '123456')) //  xxx1
+    //    }
+
+
+    // 如果省略第二个参数，默认使用空格补全长度。
+    //    {
+    //        let x = 'x';
+    //        console.log(x.padStart(4)) // '   x'
+    //        console.log(x.padEnd(4)) // 'x   '
+    //    }
+
+
+    // padStart()的常见用途是为数值补全指定位数。下面代码生成 10 位的数值字符串。
+    //    {
+    //        console.log('1'.padStart(10, '0'));  // 0000000001
+    //        console.log('12'.padStart(10, '0')); // 0000000012
+    //        console.log('1234'.padStart(10, '0')); // 0000001234
+    //    }
+
+
+    // 另一个用途是提示字符串格式。
+    //    {
+    //        console.log('12'.padStart(10, 'YYYY-MM-DD'))    // YYYY-MM-12
+    //        console.log('09-22'.padStart(10, 'YYYY-MM-DD'))     // YYYY-09-22
+    //    }
+
+
+    // ——————————————————————9. matchAll()  ——————————————————————————
+
+    /**
+     * matchAll方法返回一个正则表达式在当前字符串的所有匹配，详见《正则的扩展》的一章。
+     */
+
+    // ——————————————————————10. 模板字符串 ——————————————————————————
+    // ES5中，输出模板通常这样写道
+    /*
+     $('#result').append(
+     'There are <b>' + basket.count + '</b> ' +
+     'items in your basket, ' +
+     '<em>' + basket.onSale +
+     '</em> are on sale!'
+     );
+     */
+
+    //上面这种写法相当繁琐不方便，ES6 引入了模板字符串解决这个问题。
+    //    {
+    //        let basket = {
+    //            count: 5,
+    //            onSale: '$10'
+    //        };
+    //        let s = `There are <b>${basket.count}</b> items in your basket, <em>${basket.onSale}</em> are on sale!`
+    //        document.write(s);  // There are 5 items in your basket, $10 are on sale!
+    //    }
+
+
+    // 模板字符串（template string）是增强版的字符串，用反引号（`）标识。它可以当作普通字符串使用，也可以用来定义多行字符串，或者在字符串中嵌入变量。
+    //    {
+    //        let s1 = `模板字符串`;
+    //        let s2 = `风雨过后不一定有美好的天空\n不是天晴就会有彩虹\n所以你一脸无辜不代表你懵懂`;
+    //        console.log(s2)
+    //
+    //        // 字符串中嵌入变量
+    //        let s3 = '欢迎来到英雄联盟';
+    //        console.log(`${s1}`)
+    //        console.log(`${s3}`)
+    //    }
+
+
+    // 如果需要在文字中显示反引号，则需要转义
+    //    {
+    //        console.log(`\`转义显示反引号\``)
+    //    }
+
+
+    // 如果使用模板字符串表示多行字符串，所有的空格和缩进都会被保留在输出之中。
+    //    {
+    //        let s = `
+    //        风雨过后不一定有美好的天空
+    //        不是天晴就会有彩虹
+    //        所以你一脸无辜不代表你懵懂
+    //        `
+    //        console.log(s)
+    //        // 如果你不想要这个换行，可以使用trim方法消除它。
+    //        console.log(s.trim())
+    //    }
+
+
+    // 模板字符串中嵌入变量，需要将变量名写在${}之中。
+    // 大括号内部可以放入任意的 JavaScript 表达式，可以进行运算，以及引用对象属性。
+    //    {
+    //        let x = 1;
+    //        let y = 2;
+    //        console.log(`${x} + ${y} = ${x + y}`)
+    //        // "1 + 2 = 3"
+    //        console.log(`${x} + ${y * 2} = ${x + y * 2}`)
+    //        // "1 + 4 = 5"
+    //        let obj = {x: 1, y: 2};
+    //        console.log(`${obj.x + obj.y}`)
+    //    }
+
+
+    // 模板字符串之中还能调用函数。
+    //    {
+    //        function f() {
+    //            return 'Hello World!'
+    //        }
+    //        console.log(`${f()}`)
+    //    }
+
+
+    // 如果大括号中的值是一个对象，则默认调用对象的toString()方法
+    //    {
+    //        let z = {name: '朱明宇', age: 26};
+    //        console.log(`对象:${z}`)
+    //    }
+
+
+    // 如果模板字符串中的变量没有声明，将报错
+    //    {
+    //        console.log(`未声明的变量:${s}`) // ReferenceError: s is not defined
+    //    }
+
+
+    // 模板字符串甚至还能嵌套。
+    //    {
+    //        let s = '猪';
+    //        console.log(`大渣好，我系${s+`明宇`}`)
+    //    }
+
+
+    // 如果需要引用模板字符串本身，在需要时执行，可以像下面这样写。
+    //    {
+    //        // 写法一
+    //        let str = 'return ' + '`Hello ${name}!`';
+    //        let func = new Function('name', str);
+    //        console.log(func('Jack')) // "Hello Jack!"
+    //
+    //        // 写法二
+    //        let str = '(name) => `Hello ${name}!`';
+    //        let func = eval.call(null, str);
+    //        console.log(func('Jack')) // "Hello Jack!"
+    //    }
+
+
+
+    // ——————————————————————11. 实例：模板编译 ——————————————————————————
+    // ——————————————————————12. 标签模板 ——————————————————————————
+
+
+
+
+
+</script>
