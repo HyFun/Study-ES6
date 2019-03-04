@@ -204,7 +204,76 @@
     //    }
 
 
+    // （5）实现了 Iterator 接口的对象
+    // 任何定义了遍历器（Iterator）接口的对象（参阅 Iterator 一章），都可以用扩展运算符转为真正的数组。
+    //
+    // {
+    //     let nodeList = document.querySelectorAll('div');
+    //     let array = [...nodeList];
+    // }
+    /*上面代码中，querySelectorAll方法返回的是一个NodeList对象。
+    它不是数组，而是一个类似数组的对象。
+    这时，扩展运算符可以将其转为真正的数组，
+    原因就在于NodeList对象实现了 Iterator 。*/
 
+    // {
+    //     Number.prototype[Symbol.iterator] = function *() {
+    //         let i = 0;
+    //         let num = this.valueOf();
+    //         while (i<num){
+    //             yield i++;
+    //         }
+    //     }
+    //     console.log(...5)
+    // }
+    //上面代码中，先定义了Number对象的遍历器接口，扩展运算符将5自动转成Number实例以后，就会调用这个接口，就会返回自定义的结果。
+    // 对于那些没有部署 Iterator 接口的类似数组的对象，扩展运算符就无法将其转为真正的数组。
+    // {
+    //     let arrayLike = {
+    //         '0': 'a',
+    //         '1': 'b',
+    //         '2': 'c',
+    //         length: 3
+    //     };
+    //     let arr = [...arrayLike];  // TypeError: arrayLike is not iterable
+    // }
+    /*上面代码中，arrayLike是一个类似数组的对象，
+    但是没有部署 Iterator 接口，扩展运算符就会报错。
+    这时，可以改为使用Array.from方法将arrayLike转为真正的数组。*/
+
+
+    // （6）Map 和 Set 结构，Generator 函数
+    // 扩展运算符内部调用的是数据结构的 Iterator 接口，因此只要具有 Iterator 接口的对象，都可以使用扩展运算符，比如 Map 结构。
+    // {
+    //     let map = new Map([
+    //         [1, 'one'],
+    //         [2, 'two'],
+    //         [3, 'three'],
+    //     ]);
+    //
+    //     let arr = [...map.keys()]; // [1, 2, 3]
+    //     console.log(arr)
+    //     console.log([...map.values()])
+    // }
+    // Generator 函数运行后，返回一个遍历器对象，因此也可以使用扩展运算符。
+    // {
+    //     const go = function* () {
+    //         yield 1;
+    //         yield 2;
+    //         yield 3;
+    //     };
+    //
+    //     console.log([...go()]) // [1, 2, 3]
+    // }
+    /*上面代码中，变量go是一个 Generator 函数，
+    执行后返回的是一个遍历器对象，
+    对这个遍历器对象执行扩展运算符，就会将内部遍历得到的值，
+    转为一个数组。*/
+    //如果对没有 Iterator 接口的对象，使用扩展运算符，将会报错。
+    // {
+    //     const obj = {a: 1, b: 2};
+    //     let arr = [...obj]; // TypeError: obj is not iterable
+    // }
 
 
 </script>
