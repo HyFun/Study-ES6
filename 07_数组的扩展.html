@@ -212,9 +212,9 @@
     //     let array = [...nodeList];
     // }
     /*上面代码中，querySelectorAll方法返回的是一个NodeList对象。
-    它不是数组，而是一个类似数组的对象。
-    这时，扩展运算符可以将其转为真正的数组，
-    原因就在于NodeList对象实现了 Iterator 。*/
+     它不是数组，而是一个类似数组的对象。
+     这时，扩展运算符可以将其转为真正的数组，
+     原因就在于NodeList对象实现了 Iterator 。*/
 
     // {
     //     Number.prototype[Symbol.iterator] = function *() {
@@ -238,8 +238,8 @@
     //     let arr = [...arrayLike];  // TypeError: arrayLike is not iterable
     // }
     /*上面代码中，arrayLike是一个类似数组的对象，
-    但是没有部署 Iterator 接口，扩展运算符就会报错。
-    这时，可以改为使用Array.from方法将arrayLike转为真正的数组。*/
+     但是没有部署 Iterator 接口，扩展运算符就会报错。
+     这时，可以改为使用Array.from方法将arrayLike转为真正的数组。*/
 
 
     // （6）Map 和 Set 结构，Generator 函数
@@ -266,14 +266,175 @@
     //     console.log([...go()]) // [1, 2, 3]
     // }
     /*上面代码中，变量go是一个 Generator 函数，
-    执行后返回的是一个遍历器对象，
-    对这个遍历器对象执行扩展运算符，就会将内部遍历得到的值，
-    转为一个数组。*/
+     执行后返回的是一个遍历器对象，
+     对这个遍历器对象执行扩展运算符，就会将内部遍历得到的值，
+     转为一个数组。*/
     //如果对没有 Iterator 接口的对象，使用扩展运算符，将会报错。
     // {
     //     const obj = {a: 1, b: 2};
     //     let arr = [...obj]; // TypeError: obj is not iterable
     // }
+
+
+    // ——————————————————————02  Array.from()——————————————————————————
+    // Array.from方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象（包括 ES6 新增的数据结构 Set 和 Map）。
+
+    // 下面是一个类似数组的对象，Array.from将它转为真正的数组。
+    //    {
+    //        let arrayLike = {
+    //            '0': 'a',
+    //            '1': 'b',
+    //            '2': 'c',
+    //            length: 3
+    //        };
+    //        // es 5
+    //        console.log([].slice.call(arrayLike))
+    //        // es6
+    //        console.log(Array.from(arrayLike))
+    //    }
+
+    // 实际应用中，常见的类似数组的对象是 DOM 操作返回的 NodeList 集合，以及函数内部的arguments对象。Array.from都可以将它们转为真正的数组。
+    //    {
+    //        function f() {
+    //            console.log(Array.from(arguments))
+    //        }
+    //        f(1,2,3,4,5,6)
+    //    }
+
+    // 只要是部署了 Iterator 接口的数据结构，Array.from都能将其转为数组。
+    //    {
+    //        console.log(Array.from('hello'))
+    //        console.log(Array.from(new Set(['a',"b"])))
+    //    }
+    // 上面代码中，字符串和 Set 结构都具有 Iterator 接口，因此可以被Array.from转为真正的数组。
+
+    // 如果参数是一个真正的数组，Array.from会返回一个一模一样的新数组。
+    //    {
+    //        console.log(Array.from([1,2,3,4,5]))
+    //    }
+
+    // 值得提醒的是，扩展运算符（...）也可以将某些数据结构转为数组。
+    //    {
+    //        function f() {
+    //            console.log([...arguments])
+    //        }
+    //        f(1,2,3,4,5,6)
+    //    }
+
+    // 任何有length属性的对象，都可以通过Array.from方法转为数组，而此时扩展运算符就无法转换。
+    //    {
+    //        let obj = {length: 3};
+    //        console.log(Array.from(obj))  // [undefined, undefined, undefined]
+    //        console.log([...obj])   // 报错  TypeError: obj is not iterable
+    //    }
+
+    // 对于还没有部署该方法的浏览器，可以用Array.prototype.slice方法替代。
+    //    {
+    //        let obj = {length: 3};
+    //        console.log([].slice.call(obj))  // [empty × 3]
+    //    }
+
+
+    // Array.from还可以接受第二个参数，作用类似于数组的map方法，用来对每个元素进行处理，将处理后的值放入返回的数组。
+    //    {
+    //        console.log(Array.from([1, 2, 3, 4, 5], x => x * x));  // [1, 4, 9, 16, 25]
+    //        // 等同于
+    //        Array.from([1, 2, 3, 4, 5]).map(x => x * x);
+    //    }
+    // 下面的例子将数组中布尔值为false的成员转为0。
+    //    {
+    //        let arr = [1, , 2, false, 3, true,null,NaN,'4'*1];
+    //        console.log(Array.from(arr, n => n || 0))
+    //    }
+    // 另一个例子是返回各种数据的类型
+    //    {
+    //        function f() {
+    //            Array.from(arguments, n => {
+    //                let x = n ? true : false;
+    //                console.log(n+'---------'+x)
+    //                return x;
+    //            })
+    //        }
+    //        f(0, 1, 2, '0', '1', undefined, null, NaN)
+    //    }
+
+    //
+    //    {
+    //        console.log(Array.from({ length: 2 }, () => 'jack'))
+    //    }
+
+    /**
+     *  Array.from()的另一个应用是，将字符串转为数组，
+     *  然后返回字符串的长度。因为它能正确处理各种 Unicode 字符，
+     *  可以避免 JavaScript 将大于\uFFFF的 Unicode 字符，
+     *  算作两个字符的 bug。
+     */
+    //    {
+    //        let s = 'x🚀y';
+    //        console.log('原字符串-----'+s)
+    //        console.log('普通的返回长度-----'+s.length);
+    //        console.log('Array.from的返回长度-----'+Array.from(s).length);
+    //        console.log('扩展运算符的返回长度-----'+[...s].length);
+    //    }
+
+
+    // ——————————————————————03. Array.of()——————————————————————————
+    // Array.of方法用于将一组值，转换为数组。
+    //    {
+    //        console.log(Array.of(1,2,3,4,5))  // [1, 2, 3, 4, 5]
+    //        console.log(Array.of(3))  // [3]
+    //        console.log(Array.of(3).length)  // 1
+    //    }
+
+    // 这个方法的主要目的，是弥补数组构造函数Array()的不足。因为参数个数的不同，会导致Array()的行为有差异。
+    //    {
+    //        console.log(new Array())  // []  空数组
+    //        console.log(new Array(4))  //  长度为4的空数组
+    //        console.log(new Array(1, 2))  //  数组  [1, 2]
+    //    }
+
+    // Array.of基本上可以用来替代Array()或new Array()，并且不存在由于参数不同而导致的重载。它的行为非常统一。
+    //    {
+    //        console.log(Array.of()) // []
+    //        console.log(Array.of(undefined)) // [undefined]
+    //        console.log(Array.of(null)) // [null]
+    //        console.log(Array.of(1,2)) // [1,2]
+    //    }
+
+    // Array.of方法可以用下面的代码模拟实现。
+    //    {
+    //        function ArrayOf() {
+    //            return [].slice.call(arguments);
+    //        }
+    //        console.log(ArrayOf(undefined))
+    //    }
+
+
+    // ——————————————————————04. 数组实例的 copyWithin()——————————————————————————
+    /*数组实例的copyWithin方法，在当前数组内部，
+     将指定位置的成员复制到其他位置（会覆盖原有成员），
+     然后返回当前数组。也就是说，使用这个方法，
+     会修改当前数组。*/
+    //    {
+    //        Array.prototype.copyWithin(target, start = 0, end = this.length)
+    //    }
+    /*它接受三个参数。
+     target（必需）：从该位置开始替换数据。如果为负值，表示倒数。
+     start（可选）：从该位置开始读取数据，默认为 0。如果为负值，表示倒数。
+     end（可选）：到该位置前停止读取数据，默认等于数组长度。如果为负值，表示倒数。*/
+    // 这三个参数都应该是数值，如果不是，会自动转为数值。
+    //    {
+    //        let arr = [1,2,3,4,5];
+    //        arr.copyWithin(0,3);   // 改变原数组
+    //        console.log(arr)  // [4, 5, 3, 4, 5]
+    //    }
+    // 上面代码表示将从 3 号位直到数组结束的成员（4 和 5），复制到从 0 号位开始的位置，结果覆盖了原来的 1 和 2。
+
+    {
+        // 将3号位复制到0号位
+        console.log([1, 2, 3, 4, 5].copyWithin(0, 3, 4))
+    }
+
 
 
 </script>
