@@ -430,11 +430,127 @@
     //    }
     // 上面代码表示将从 3 号位直到数组结束的成员（4 和 5），复制到从 0 号位开始的位置，结果覆盖了原来的 1 和 2。
 
-    {
-        // 将3号位复制到0号位
-        console.log([1, 2, 3, 4, 5].copyWithin(0, 3, 4))
-    }
+    //    {
+    //        // 将3号位复制到0号位
+    //        console.log([1, 2, 3, 4, 5].copyWithin(0, 3, 4))
+    //
+    //            // -2相当于3号位，-1相当于4号位
+    //            console.log([1, 2, 3, 4, 5].copyWithin(0, -2, -1))
+    //    }
 
 
+    // ——————————————————————05. 数组实例的 find() 和 findIndex()——————————————————————————
 
+    /*数组实例的find方法，用于找出第一个符合条件的数组成员。
+     它的参数是一个回调函数，所有数组成员依次执行该回调函数，
+     直到找出第一个返回值为true的成员，然后返回该成员。
+     如果没有符合条件的成员，则返回undefined。*/
+    //    {
+    //        console.log([0,1,2,3,4,5,6,7,8].find(n=>n>5))   // 6
+    //        console.log([0,1,2,3,4,5,6,7,8].findIndex(n=>n>5))   // 6
+    //    }
+    // 参数
+    //    {
+    //        [8, 5, 6].find(function (v, i, arr) {  // 值  index   原数组
+    //            console.log(v, i, arr)
+    //        })
+    //    }
+    // 这两个方法都可以接受第二个参数，用来绑定回调函数的this对象。
+    //    {
+    //        let obj = {
+    //            name: '朱明宇',
+    //            age: 26,
+    //            height: 176
+    //        }
+    //            [1, 2, 3].find(function (v, i, arr) {
+    //            console.log(this)
+    //        })
+    //        function f(v) {
+    //            console.log(this)
+    //            return v > this.age;
+    //        }
+    //        [1, 2, 3].find(f, obj)
+    //    }
+    // 另外，这两个方法都可以发现NaN，弥补了数组的indexOf方法的不足。
+    //    {
+    //        console.log([NaN].indexOf(NaN))     // -1
+    //        console.log([NaN].findIndex(y => Object.is(NaN, y)))   // 0
+    //    }
+    // 上面代码中，indexOf方法无法识别数组的NaN成员，但是findIndex方法可以借助Object.is方法做到。
+
+
+    // ——————————————————————06. 数组实例的 fill()——————————————————————————
+    // fill方法使用给定值，填充一个数组。
+    //    {
+    //        let array = ['a','b','c'];
+    //        array.fill(7)
+    //        console.log(array)  // [7 7 7]
+    //        console.log(new Array(3).fill(7))  // [7 7 7]
+    //    }
+
+    // fill方法还可以接受第二个和第三个参数，用于指定填充的起始位置和结束位置。
+    //    {
+    //        let arr = ['a','b','c','d','e'];
+    //        arr.fill(7,3,4);
+    //        console.log(arr)   // ["a", "b", "c", 7, "e"]
+    //    }
+
+    // 注意，如果填充的类型为对象，那么被赋值的是同一个内存地址的对象，而不是深拷贝对象。
+
+
+    // ——————————————————————07. 数组实例的 entries()，keys() 和 values()——————————————————————————
+    //    {
+    //        let arr = ['a','b','c','d','e','f'];
+    //        for (let a of arr){
+    //            console.log(a)
+    //        }
+    //
+    //        for (let a of arr.keys()){
+    //            console.log(a)
+    //        }
+    //
+    //        for (let a of arr.values()){
+    //            console.log(a)
+    //        }
+    //
+    //        for (let [index,value] of arr.entries()){
+    //            console.log(index,value)
+    //        }
+    //    }
+
+
+    // ——————————————————————08. 数组实例的 includes() ——————————————————————————
+    //    {
+    //        console.log([1,2,3].includes(4))  // false
+    //        console.log([1,2,3].includes(1))  // true
+    //        console.log([1,2,3,NaN].includes(NaN))  // true
+    //        console.log([undefined,null,NaN,0,1,true,false].includes(undefined))  // true
+    //        console.log([undefined,null,NaN,0,1,true,false].includes(null))  // true
+    //        console.log([undefined,null,NaN,0,1,true,false].includes(false))  // true
+    //    }
+    // 该方法的第二个参数表示搜索的起始位置，默认为0。
+    //    {
+    //        console.log([0,1,2,3].includes(0,2))   // false
+    //        console.log([0,1,2,3].includes(3,2))   // true
+    //    }
+
+    /*indexOf方法有两个缺点，一是不够语义化，
+     它的含义是找到参数值的第一个出现位置，
+     所以要去比较是否不等于-1，表达起来不够直观。
+     二是，它内部使用严格相等运算符（===）进行判断，
+     这会导致对NaN的误判。*/
+
+
+    // ——————————————————————09. 数组实例的 flat()，flatMap()——————————————————————————
+    // ——————————————————————10. 数组的空位——————————————————————————
+    //  数组的空位指，数组的某一个位置没有任何值。比如，Array构造函数返回的数组都是空位。
+    //    {
+    //        // ES5 对空位的处理，已经很不一致了，大多数情况下会忽略空位。
+    //        let arr = [, , 'a'];
+    //
+    //        arr.forEach(function (v, i) {
+    //            console.log(v)
+    //        })
+    //        // ES6 则是明确将空位转为undefined。
+    //    }
 </script>
