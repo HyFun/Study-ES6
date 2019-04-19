@@ -20,18 +20,56 @@
     //    }
 
 
+    //    {
+    //        let s1 = Symbol('foo');
+    //        let s2 = Symbol('bar');
+    //
+    //        s1 // Symbol(foo)
+    //        s2 // Symbol(bar)
+    //
+    //        s1.toString() // "Symbol(foo)"
+    //        s2.toString() // "Symbol(bar)"
+    //
+    //        console.log(s1)
+    //        console.log(s2)
+    //    }
+
+    // Symbol函数可以接受一个字符串作为参数，表示对 Symbol 实例的描述，主要是为了在控制台显示，或者转为字符串时，比较容易区分。
+    // 如果 Symbol 的参数是一个对象，就会调用该对象的toString方法，将其转为字符串，然后才生成一个 Symbol 值。
+    //    {
+    //        let s = Symbol({
+    //            toString(){
+    //                return 'abc';
+    //            }
+    //        });
+    //        console.log(s)      // Symbol(abc)
+    //    }
+    // 注意，Symbol函数的参数只是表示对当前 Symbol 值的描述，因此相同参数的Symbol函数的返回值是不相等的。
+    //    {
+    //        let s1 = Symbol();
+    //        let s2 = Symbol();
+    //        console.log(s1 === s2)  // false
+    //
+    //        let s3 = Symbol('abc');
+    //        let s4 = Symbol('abc');
+    //        console.log(s3 === s4)  // false
+    //    }
+
+    // Symbol 值不能与其他类型的值进行运算，会报错。
+    //        {
+    //            let s = Symbol();
+    //            //console.log('哈哈哈'+s)  // Uncaught TypeError: Cannot convert a Symbol value to a string
+    //            console.log('hhh '+String(s))
+    //        }
+    // 另外，Symbol 值也可以转为布尔值，但是不能转为数值。
     {
-        let s1 = Symbol('foo');
-        let s2 = Symbol('bar');
-
-        s1 // Symbol(foo)
-        s2 // Symbol(bar)
-
-        s1.toString() // "Symbol(foo)"
-        s2.toString() // "Symbol(bar)"
-        
-        console.log(s1)
-        console.log(s2)
+        let sym = Symbol();
+        if (sym) {
+            console.log(sym)
+        }
+        Number(sym) // TypeError
+        sym + 2 // TypeError
     }
+
 
 </script>
