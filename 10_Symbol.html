@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -7,9 +8,11 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
+
 <body>
 
 </body>
+
 </html>
 
 <script type="text/javascript">
@@ -62,14 +65,156 @@
     //            console.log('hhh '+String(s))
     //        }
     // 另外，Symbol 值也可以转为布尔值，但是不能转为数值。
-    {
-        let sym = Symbol();
-        if (sym) {
-            console.log(sym)
-        }
-        Number(sym) // TypeError
-        sym + 2 // TypeError
-    }
+    //    {
+    //        let sym = Symbol();
+    //        if (sym) {
+    //            console.log(sym)
+    //        }
+    //        Number(sym) // TypeError
+    //        sym + 2 // TypeError
+    //    }
+
+
+    // ——————————————————————02. Symbol.prototype.description——————————————————————————
+    // 创建 Symbol 的时候，可以添加一个描述。
+    //    {
+    //        const sym = Symbol('foo');
+    //        // 上面代码中，sym的描述就是字符串foo。
+    //        // 但是，读取这个描述需要将 Symbol 显式转为字符串，即下面的写法。
+    //        String(sym) // "Symbol(foo)"
+    //        sym.toString // "Symbol(foo)"
+    //        console.log(String(sym))  // 显示转换为string
+    //        console.log(sym.toString())
+    //        console.log(Boolean(sym))   // true
+    //    }
+
+
+    // ES2019 提供了一个实例属性description，直接返回 Symbol 的描述。
+
+    //    {
+    //        // 如果参数是字符串 那么字符串将作为其描述信息
+    //        let s1 = Symbol('foo');
+    //        console.log(s1.description) // foo
+    //
+    //        // 如果参数是对象，那么toString()方法的返回值 就会作为其描述信息
+    //        const s2 = Symbol({
+    //            toString: function () {
+    //                return '一个傻逼，他总是酷酷的'
+    //            }
+    //        });
+    //        console.log(s2.description)  // 一个傻逼，他总是酷酷的
+    //
+    //
+    //        const s3 = Symbol();
+    //        console.log(s3.description) // undefined
+    //
+    //        const s4 = Symbol({});
+    //        console.log(s4.description)  // [object Object]
+    //
+    //        const s5 = Symbol(null);
+    //        console.log(s5.description)  // null
+    //
+    //        const s6 = Symbol(NaN);
+    //        console.log(s6.description)  // NaN
+    //
+    //        const s7 = Symbol(true);
+    //        console.log(s7.description)  // NaN
+    //    }
+
+
+    // ——————————————————————03. 作为属性名的 Symbol——————————————————————————
+    /*由于每一个 Symbol 值都是不相等的，
+     这意味着 Symbol 值可以作为标识符，
+     用于对象的属性名，就能保证不会出现同名的属性。
+     这对于一个对象由多个模块构成的情况非常有用，
+     能防止某一个键被不小心改写或覆盖。*/
+    //    {
+    //        let mySymbol = Symbol();
+    //
+    //        // 第一种写法
+    //        let a = {};
+    //        a[mySymbol] = 'Hello!';
+    //
+    //        // 第二种写法
+    //        let a = {
+    //            [mySymbol]: 'Hello!'
+    //        };
+    //
+    //        // 第三种写法
+    //        let a = {};
+    //        Object.defineProperty(a, mySymbol, {value: 'Hello!'});
+    //
+    //        // 以上写法都得到同样结果
+    //        a[mySymbol] // "Hello!"
+    //    }
+
+
+    //    注意，Symbol 值作为对象属性名时，不能用点运算符。
+    //    {
+    //        const mySymbol = Symbol();
+    //        const a = {};
+    //        a[mySymbol] = 'Hello';
+    //        a.mySymbol = 'World';
+    //        console.log(a.mySymbol) // World
+    //        console.log(a[mySymbol]) // Hello
+    //        console.log(a['mySymbol']) // World
+    //    }
+
+    // 同理，在对象的内部，使用 Symbol 值定义属性时，Symbol 值必须放在方括号之中。
+    //    {
+    //        const mySymbol = Symbol();
+    //        const a = {
+    //            mySymbol: '123',
+    //            [mySymbol]: '456',
+    //        }
+    //        console.log(a.mySymbol) // 123
+    //        console.log(a[mySymbol]) // 456
+    //    }
+
+    //    {
+    //        const log = {};
+    //
+    //        log.levels = {
+    //            DEBUG: Symbol('debug'),
+    //            INFO: Symbol('info'),
+    //            WARN: Symbol('warn')
+    //        };
+    //        console.log(log.levels.DEBUG.description, 'debug message');
+    //        console.log(log.levels.INFO.description, 'info message');
+    //    }
+
+
+    // ——————————————————————04. 实例：消除魔术字符串——————————————————————————
+
+    // 求面积
+    //    {
+    //        const shape = {
+    //            triangle: Symbol(),
+    //            square: Symbol()
+    //        }
+    //
+    //        function getArea(shp, option) {
+    //            let area = 0;
+    //            switch (shp) {
+    //                case shape.triangle:
+    //                    area = 0.5 * option.width * option.height;
+    //                    break;
+    //                case shape.square:
+    //                    area = Math.pow(option.width, 2);
+    //                    break;
+    //                default:
+    //                    return new Error('请输入正确的形状类别');
+    //            }
+    //            return area;
+    //        }
+    //        console.log(getArea(shape.square, {width: 4}))
+    //        console.log(getArea(shape.triangle, {width: 4, height: 3}))
+    //        console.log(getArea('ssss', {width: 4, height: 3}))
+    //    }
+
+
+    // ——————————————————————05. 属性名的遍历——————————————————————————
+
 
 
 </script>
