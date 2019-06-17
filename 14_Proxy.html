@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+</body>
+</html>
+
+<script type="text/javascript">
+    // ——————————————————————01.  ——————————————————————————
+
+
+    // ——————————————————————01.  概述——————————————————————————
+    /*Proxy 用于修改某些操作的默认行为，
+     等同于在语言层面做出修改，
+     所以属于一种“元编程”（meta programming），
+     即对编程语言进行编程。*/
+
+    /* Proxy 可以理解成，在目标对象之前架设一层“拦截”，
+     外界对该对象的访问，都必须先通过这层拦截，
+     因此提供了一种机制，可以对外界的访问进行过滤和改写。
+     Proxy 这个词的原意是代理，
+     用在这里表示由它来“代理”某些操作，可以译为“代理器”。*/
+
+    //    {
+    //        var obj = new Proxy({}, {
+    //            get: function (target, key, receiver) {
+    //                console.log(`getting ${key}!`);
+    //                return Reflect.get(target, key, receiver);
+    //            },
+    //            set: function (target, key, value, receiver) {
+    //                console.log(`setting ${key}!`);
+    //                return Reflect.set(target, key, value, receiver);
+    //            }
+    //        });
+    //        obj.num = 1;
+    //        obj.num++;
+    //    }
+
+
+    // ES6 原生提供 Proxy 构造函数，用来生成 Proxy 实例。
+    // var proxy = new Proxy(target, handler);
+
+    // 下面是另一个拦截读取属性行为的例子。
+    //    {
+    //        let proxy = new Proxy({}, {
+    //            get: function (target, key, receiver) {
+    //                return 35;
+    //            }
+    //        })
+    //        console.log(proxy.name)
+    //    }
+
+
+    //一个技巧是将 Proxy 对象，设置到object.proxy属性，从而可以在object对象上调用。
+    //    {
+    //        var object = { proxy: new Proxy(target, handler) };
+    //    }
+
+    // Proxy 实例也可以作为其他对象的原型对象。
+    //    {
+    //        var proxy = new Proxy({}, {
+    //            get: function (target, property) {
+    //                return 35;
+    //            }
+    //        });
+    //
+    //        let obj = Object.create(proxy);
+    //        console.log(obj.time) // 35
+    //    }
+
+    //    上面代码中，proxy对象是obj对象的原型，obj对象本身并没有time属性，所以根据原型链，会在proxy对象上读取该属性，导致被拦截。
+
+
+    // ——————————————————————02. Proxy 实例的方法——————————————————————————
+    // get()
+    /*get方法用于拦截某个属性的读取操作，
+     可以接受三个参数，依次为目标对象、
+     属性名和 proxy 实例本身（严格地说，是操作行为所针对的对象），
+     其中最后一个参数可选。*/
+
+    //    {
+    //        var person = {
+    //            name: "张三"
+    //        };
+    //        var proxy = new Proxy(person, {
+    //            get: function(target, property) {
+    //                if (property in target) {
+    //                    return target[property];
+    //                } else {
+    //                    throw new ReferenceError("Property \"" + property + "\" does not exist.");
+    //                }
+    //            }
+    //        });
+    //        proxy.name // "张三"
+    //        proxy.age // 抛出一个错误
+    //    }
+
+
+    //    {
+    //        let proto = new Proxy({foo: 123}, {
+    //            get(target, propertyKey, receiver) {
+    //                console.log('GET ' + propertyKey);
+    //                return 35;
+    //            }
+    //        });
+    //
+    //        let obj = Object.create(proto);
+    //        console.log(obj.foo) // "GET foo"
+    //    }l
+
+
+    // 取数组的负数index
+    //    {
+    //        function create(...nums) {
+    //            let handle = {
+    //                get: function (target, propKey, receiver) {
+    //                    let index = Number.parseInt(propKey);
+    //                    if (index < 0) {
+    //                        propKey = target.length + index;
+    //                    }
+    //                    return Reflect.get(target, propKey, receiver);
+    //                }
+    //            };
+    //            let target = [];
+    //            target.push(...nums);
+    //            return new Proxy(target, handle);
+    //        }
+    //        let arr = create(1, 2, 3, 4, 5, 6);
+    //        console.log(arr[-1])   // 倒数第一个
+    //        console.log(arr[-2])   // 倒数第二个
+    //    }
+
+    //下面是一个get方法的第三个参数的例子，它总是指向原始的读操作所在的那个对象，一般情况下就是 Proxy 实例。
+    //    {
+    //        let proxy = new Proxy({}, {
+    //            get: function (target, propKey, receiver) {
+    //                return receiver;
+    //            }
+    //        })
+    //        console.log(proxy.getReceiver === proxy)  // true
+    //    }
+
+    //    {
+    //        const proxy = new Proxy({}, {
+    //            get: function (target, propKey, receiver) {
+    //                return receiver;
+    //            }
+    //        })
+    //        const d = Object.create(proxy);
+    //        console.log(d.a === d);  // true
+    //    }
+
+
+    // set()
+    //    {
+    //        let validator = {
+    //            set: function(obj, prop, value) {
+    //                if (prop === 'age') {
+    //                    if (!Number.isInteger(value)) {
+    //                        throw new TypeError('The age is not an integer');
+    //                    }
+    //                    if (value > 200) {
+    //                        throw new RangeError('The age seems invalid');
+    //                    }
+    //                }
+    //                // 对于满足条件的 age 属性以及其他属性，直接保存
+    //                obj[prop] = value;
+    //            }
+    //        };
+    //
+    //        let person = new Proxy({}, validator);
+    //
+    //        person.age = 100;
+    //
+    //        person.age // 100
+    //        person.age = 'young' // 报错
+    //        person.age = 300 // 报错
+    //    }
+
+
+
+
+
+
+</script>

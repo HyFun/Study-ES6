@@ -214,6 +214,46 @@
 
 
     // ——————————————————————05. 属性名的遍历——————————————————————————
+    /*Symbol 作为属性名，该属性不会出现在for...in、for...of循环中，
+     也不会被Object.keys()、Object.getOwnPropertyNames()、JSON.stringify()返回。
+     但是，它也不是私有属性，有一个Object.getOwnPropertySymbols方法，
+     可以获取指定对象的所有 Symbol 属性名。*/
+    //    {
+    //        const obj = {};
+    //        let a = Symbol('a');
+    //        let b = Symbol('b');
+    //        obj[a] = 'Hello';
+    //        obj[b] = 'World';
+    //        const objectSymbols = Object.getOwnPropertySymbols(obj);
+    //        console.log(objectSymbols);
+    //    }
+
+    //    由于以 Symbol 值作为名称的属性，不会被常规方法遍历得到。我们可以利用这个特性，为对象定义一些非私有的、但又希望只用于内部的方法。
+
+    // ——————————————————————06. Symbol.for()，Symbol.keyFor()——————————————————————————
+
+    //    {
+    //        console.log(Symbol.for("bar") === Symbol.for("bar"))
+    //        // true
+    //
+    //        console.log(Symbol("bar") === Symbol("bar"))
+    //        // false
+    //    }
+
+    //    {
+    //        let s1 = Symbol.for("foo");
+    //        Symbol.keyFor(s1) // "foo"
+    //
+    //        let s2 = Symbol("foo");
+    //        Symbol.keyFor(s2) // undefined
+    //    }
+    //
+    //    上面代码中，变量s2属于未登记的 Symbol 值，所以返回undefined。
+
+
+    // ——————————————————————07. 实例：模块的 Singleton 模式——————————————————————————
+
+
 
 
 
