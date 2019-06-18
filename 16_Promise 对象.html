@@ -168,9 +168,198 @@
     //            })
     //    }
 
+    // 如果 Promise 状态已经变成resolved，再抛出错误是无效的。
+
+    //    {
+    //        new Promise((resolve, reject) => {
+    //            resolve('hhhh');
+    //            throw  new Error('发生异常了');
+    //        })
+    //            .then(res => {
+    //                console.log(res)   // hhhh
+    //            })
+    //            .catch(err => {
+    //                console.log(err)
+    //            })
+    //    }
+
+    // 一般来说，不要在then方法里面定义 Reject 状态的回调函数（即then的第二个参数），总是使用catch方法。
+    //    {
+    //        let promise = new Promise((resolve, reject) => {
+    //            throw new Error('明天再也没有你的笑脸');
+    //        });
+    //        // 不推荐
+    //        promise
+    //            .then(res => {
+    //                console.log('success', res)
+    //            }, error => {
+    //                console.log('error', error)
+    //            })
+    //
+    //        // 推荐
+    //        promise
+    //            .then(res => {
+    //                console.log('success', res)
+    //            })
+    //            .catch(err => {
+    //                console.error(err)
+    //            })
+    //    }
+
+    // 第二种写法可以捕获前面then方法执行中的错误，也更接近同步的写法（try/catch）。因此，建议总是使用catch方法，而不使用then方法的第二个参数。
+
+
+    // 如果没有使用catch方法指定错误处理的回调函数，Promise 对象抛出的错误不会传递到外层代码，即不会有任何反应。
+    //    {
+    //        let promise = function () {
+    //            return new Promise((resolve, reject) => {
+    //                resolve(x + 1);
+    //            });
+    //        }
+    //        promise().then(res => {
+    //            console.log(res)
+    //        })
+    //        setTimeout(function () {
+    //            console.log('运行了')
+    //        }, 1000)
+    //    }
+    /*会打印出错误提示ReferenceError: x is not defined，
+     但是不会退出进程、终止脚本执行，2 秒之后还是会输出123。
+     这就是说，Promise 内部的错误不会影响到 Promise 外部的代码，
+     通俗的说法就是“Promise 会吃掉错误”。*/
 
 
 
+    // ——————————————————————05. Promise.prototype.finally() ——————————————————————————
+    //finally方法用于指定不管 Promise 对象最后状态如何，都会执行的操作。该方法是 ES2018 引入标准的。
+    //    {
+    //        new Promise((resolve, reject) => {
+    //            resolve('成功了');
+    //        }).then(res => {
+    //            console.log(res)
+    //        }).catch(err => {
+    //            console.log(err)
+    //        }).finally(() => {
+    //            console.log('执行了finally')
+    //        });
+    //    }
+
+
+    // ——————————————————————06. Promise.all()——————————————————————————
+    // Promise.all方法用于将多个 Promise 实例，包装成一个新的 Promise 实例。
+    //    {
+    //        const promises = [1, 2, 3, 4, 5, 6].map(function (item) {
+    //            return new Promise((resolve, reject) => {
+    //                resolve(Math.pow(item, 2));
+    //            })
+    //        })
+    //        Promise.all(promises)
+    //            .then(res => {
+    //                console.log('success', res)  // 返回的是一个数组，且只执行一次
+    //            })
+    //            .catch(err => {
+    //                console.error(err)
+    //            })
+    //    }
+
+
+    //        {
+    //            const databasePromise = function (promise) {
+    //                return new Promise((resolve, reject) => {
+    //                    // 连接数据库成功  获取用户名
+    //                    resolve(promise);
+    //                })
+    //            };
+    //            const weatherData = databasePromise(new Promise((resolve, reject) => {
+    //                resolve('获取天气信息成功');
+    //            }));
+    //            const userInfo = databasePromise(new Promise((resolve, reject) => {
+    //                resolve('获取用户信息成功');
+    //            }));
+    //            Promise.all([weatherData, userInfo])
+    //                .then(([weather, user]) => {
+    //                        console.log('success', weather, user)
+    //                    }
+    //                )
+    //                .catch(err => {
+    //                    console.log(err)
+    //                })
+    //        }
+
+
+    // 如果作为参数的 Promise 实例，自己定义了catch方法，那么它一旦被rejected，并不会触发Promise.all()的catch方法。
+    //        {
+    //            let p1 = new Promise((resolve, reject) => {
+    //                resolve(x+1);
+    //            })
+    //                .then(res => res)
+    //                .catch(err => {
+    //                    console.log('p1', err)
+    //                })
+    //
+    //            let p2 = new Promise((resolve, reject) => {
+    //                resolve(x+1);
+    //            })
+    //                .then(res => res)
+    //                .catch(err => {
+    //                    console.log('p2', err)
+    //                });
+    //
+    //            Promise.all([p1, p2])
+    //                .then(res => {
+    //                    console.log('all', res)
+    //                })
+    //                .catch(err => {
+    //                    console.log('all', err)
+    //                })
+    //        }
+
+
+    //    {
+    //        let connectDatabase = function () {
+    //            return new Promise((resolve, reject) => {
+    //                resolve(true)
+    //            })
+    //        }
+    //
+    //        let weather = connectDatabase()
+    //            .then(res => new Promise((resolve, reject) => {
+    //                resolve("获取天气信息成功");
+    //            }))
+    //
+    //        let user = connectDatabase()
+    //            .then(res => new Promise((resolve, reject) => {
+    //                resolve('获取用户信息成功');
+    //            }));
+    //
+    //        Promise.all([weather, user])
+    //            .then(([weather, user]) => {
+    //                console.log('all', [weather, user])
+    //            })
+    //    }
+
+    // 如果p2没有自己的catch方法，就会调用Promise.all()的catch方法。
+    //    {
+    //        let p1 = new Promise((resolve, reject) => {
+    //            resolve('Hello');
+    //        }).then(res => res)
+    //            .catch(err => {
+    //                console.log('p1', err)
+    //            });
+    //        let p2 = new Promise((resolve, reject) => {
+    //            reject(new Error('p2出错了'));
+    //        })
+    //            .then(res => res);
+    //
+    //
+    //        Promise.all([p1, p2])
+    //            .then(res => {
+    //                console.log(res)
+    //            })
+    //            .catch(err => {
+    //                console.log('all', err)
+    //            })
+    //    }
 
 
 </script>
