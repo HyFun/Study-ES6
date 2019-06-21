@@ -362,4 +362,74 @@
     //    }
 
 
+    // ——————————————————————07. Promise.race()——————————————————————————
+    // Promise.race方法同样是将多个 Promise 实例，包装成一个新的 Promise 实例。
+    // {
+    //     const p = Promise.race([
+    //         fetch('https://www.baidu.com'),
+    //         new Promise(function (resolve, reject) {
+    //             setTimeout(() => reject(new Error('request timeout')), 5000)
+    //         })
+    //     ]);
+    //     p
+    //         .then(console.log)
+    //         .catch(console.error);
+    // }
+
+
+    // 只响应一个
+    // {
+    //     Promise.race([
+    //         new Promise((resolve, reject) => {
+    //             setTimeout(function () {
+    //                 resolve('第一个');
+    //             }, 3000)
+    //         }),
+    //         new Promise((resolve, reject) => {
+    //             setTimeout(function () {
+    //                 resolve('第二个');
+    //             }, 1000)
+    //         })
+    //     ])
+    //         .then(console.log)
+    // }
+
+
+    // ——————————————————————08. Promise.resolve()——————————————————————————
+    // 有时需要将现有对象转为 Promise 对象，Promise.resolve方法就起到这个作用。
+    // Promise.resolve等价于下面的写法。
+    // {
+    //     Promise.resolve('foo')
+    //     // 等价于
+    //     new Promise(resolve => resolve('foo'))
+    // }
+
+    // （1）参数是一个 Promise 实例
+    // （2）参数是一个thenable对象(有then方法的对象)
+
+    // {
+    //     let thenable1 = {
+    //         then: function () {
+    //             console.log('对象中的then方法')
+    //         }
+    //     };
+    //
+    //     Promise.resolve(thenable1)
+    //         .then(res => {
+    //             console.log('res', res)
+    //         })
+    //
+    //     let thenable2 = {
+    //         then: function (resolve, reject) {
+    //             resolve('thenable2中的then方法')
+    //         }
+    //     };
+    //
+    //     Promise.resolve(thenable2)
+    //         .then(res => {
+    //             console.log('res', res)
+    //         })
+    // }
+
+
 </script>
