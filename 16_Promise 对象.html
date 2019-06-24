@@ -431,5 +431,71 @@
     //         })
     // }
 
+    // （3）参数不是具有then方法的对象，或根本就不是对象
+    // {
+    //     Promise.resolve('hello')
+    //         .then(console.log)
+    // }
+    // （4）不带有任何参数
+    // {
+    //     Promise.resolve()
+    //         .then(console.log)
+    // }
+
+
+    // {
+    //     setTimeout(function () {
+    //         console.log('three');
+    //     }, 0);
+    //     Promise.resolve().then(function () {
+    //         console.log('two');
+    //     });
+    //     console.log('one');
+    //
+    //     // one
+    //     // two
+    //     // three
+    // }
+
+
+    // ——————————————————————09. Promise.reject()——————————————————————————
+    // {
+    //     Promise.reject('出错啦')
+    //         .then(res => {
+    //             console.log('then', res)
+    //         })
+    //         .catch(err => {
+    //             console.log('err', err)   // 出错啦
+    //         })
+    // }
+
+
+    // 注意，Promise.reject()方法的参数，会原封不动地作为reject的理由，变成后续方法的参数。这一点与Promise.resolve方法不一致。
+    // {
+    //     let thenable = {
+    //         then: function (resolve, reject) {
+    //             reject('出错了');
+    //         }
+    //     };
+    //     Promise.reject(thenable)
+    //         .catch(error => {
+    //             console.log(error === thenable) // true
+    //         })
+    // }
+
+
+    // ——————————————————————10. 应用——————————————————————————
+    // 加载图片
+    {
+        const preloadImage = function (path) {
+            return new Promise(function (resolve, reject) {
+                const image = new Image();
+                image.onload = resolve;
+                image.onerror = reject;
+                image.src = path;
+            });
+        };
+    }
+
 
 </script>
